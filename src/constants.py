@@ -1,9 +1,10 @@
-"""
+""""
 Module to store constants used throughout the project
 """
 
-BIXI_WEBSITE = "https://bixi.com/en/open-data/"
-RAW_DATA_DIRECTORY = "/mnt/c/Users/felip/Documents/knowledge/ml_projects/protifolio/bixi_ride_predictions/data"
+BIXI_OPEN_DATA_URL = 'https://bixi.com/en/open-data/'
+STATION_CAPACITY_URL= 'https://gbfs.velobixi.com/gbfs/en/station_information.json'
+RAW_DATA_DIRECTORY = '/data'
 COLUMN_MAPPING = {
     'pk':'code',
     'emplacement_pk_start': 'code_start_station',
@@ -18,6 +19,6 @@ COLUMN_MAPPING = {
     'endstationlongitude':'longitude_end_station',
     'starttimems':'start_date', 
     'endtimems': 'end_date',
-    "start_station_code":"code_start_station",
-    "end_station_code":"code_end_station"
+    'start_station_code':'code_start_station',
+    'end_station_code':'code_end_station'
 }

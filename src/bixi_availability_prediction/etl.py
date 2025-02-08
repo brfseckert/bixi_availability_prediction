@@ -5,7 +5,7 @@ Module dedicated to etl operations related to the data sources of the project
 import requests
 from bs4 import BeautifulSoup
 from pandas import DataFrame, read_csv, concat
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from re import search
 import os
 import logging
@@ -21,7 +21,14 @@ class RidesDataPipeline:
     Extract, load and transform pipeline object for bixi rides data
     """
 
-    def __init__(self, url: str, temporary_directory: str, years: Tuple[int, int], column_name_mapping: Dict[str, str], ride_data_columns: List[str]):
+    def __init__(
+        self, 
+        url: str, 
+        temporary_directory: str, 
+        years: Tuple[int, int], 
+        column_name_mapping: Dict[str, str], 
+        ride_data_columns: List[str]
+    ):
         self.url = url
         self.raw_data_directory = temporary_directory
         self.years = [y for y in range(years[0], years[1] +1)]
@@ -102,7 +109,7 @@ class RidesDataPipeline:
         """Extracts and saves rides data available through bixi S3 endpoints"""
         
         try:
-            s3_endpoints = self._get_s3_endpoints_metadata()
+            s3_endpoints = self._get_s3_endpoints()
 
             logging.info(f'The following s3 endpoints were detected: {s3_endpoints}')
             
@@ -180,7 +187,7 @@ class RidesDataPipeline:
                         right_on='code',
                         suffixes=('_rides','_station')
                     )
-                    .drop(['code_rides','code_station','is_member','duration_sec'], axis=1)
+                    .drop(['is_member','duration_sec'], axis=1)
                     .rename(
                         columns={
                             'latitude_rides':'latitude_start_station',
@@ -188,7 +195,9 @@ class RidesDataPipeline:
                             'latitude_station' :'latitude_end_station',
                             'longitude_station' :'longitude_end_station',
                             'name_rides':'name_start_station',
-                            'name_station':'name_end_station'
+                            'name_station':'name_end_station',
+                            'code_rides' :'code_start_station',
+                            'code_station':'code_end_station'
                         }
                     )
                 )
@@ -196,5 +205,48 @@ class RidesDataPipeline:
             
             else:
                 dfs.append(rides_dataframe[self.ride_data_columns])
+
+            logging.info(f'Data successfully transformed for year {year}.')
         
         return concat(dfs)
+
+    def load(self, df: DataFrame, target_directory: str='', file_name: str='historical_rides_data') -> None:
+        """
+        Load transformed data into an specific target_directory
+        """
+        
+        df.to_csv(f'{target_directory}{file_name}.csv')
+        logging.info(f'Rides data sucessfully loaded on {target_directory}{file_name}.csv')
+        
+    def run_pipeline(self, steps: List[str]=['extract','transform','load'], **kwargs) -> None:
+        """
+        Run selected steps of RidesDataPipeline
+        """
+        if 'extract' in steps:
+            self.extract()
+            
+        if 'transform' in steps:
+            df = self.transform()
+            
+        if 'load' in steps:
+            self.load(df, **kwargs)
+
+def get_stations_capacity(url: str) -> DataFrame:
+    """
+    Get the stations capacity thourgh the url provided and return a dataframe with columns station_name and capcity
+    """
+    
+    response = requests.get(url)
+    stations = response.json()['data']['stations']
+
+    stations_capacity_dictonary = {
+        station["name"]:station['capacity']
+        for station in stations
+    }
+
+    return DataFrame(
+        {
+            'station_name' : stations_capacity_dictonary.keys(),
+            'capacity' : stations_capacity_dictonary.values()
+        }
+    )
