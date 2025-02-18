@@ -23,7 +23,4 @@ def standarize_station_name(series: Series) -> Series:
         for station in unique_stations
     }
 
-    return Series(
-        cleaned_station_names[station] 
-        for station in series
-    )
+    return  series.map(cleaned_station_names)

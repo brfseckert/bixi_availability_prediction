@@ -1,3 +1,4 @@
 .env
 /data/*
 /notebooks/*.csv
+/notebooks/raw_data/*
