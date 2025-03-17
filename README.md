@@ -1,5 +1,5 @@
 # Summary
-This a project attempts to predict the number of bicycles available at Bixi's stations per a hour and date within the city of Montreal from April to November of each year.
+This a project attempts to predict the number of bicycles available at Bixi's stations every Sunday for the following 7 days every 15 minutes
 
 # How to use this repository ?
 Linux:
