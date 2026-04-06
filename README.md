@@ -1,13 +1,12 @@
-# Summary
+# Bixi Availability Prediction
 
-This project aims to predict the number available bikes per station within the city of Montreal every Sunday for the following 7 days with a 30 minutes window. The bike sharing system is operated and manged by Bixi. See the following link for more information about the company: https://bixi.com/en/.
+Predicting the number of available bikes at every Bixi station in Montreal for the next 7 days, in 30-minute windows.
 
-# How to use this repository ?
+## Motivation
 
-Linux:
-- create a new virtual python enviroment `python3 -m venv .venv`
-- install dependencies `pip install requirments.txt`
-- **OPTIONAL**: when using jupyter notebooks, it comes in handy to import pacakges developed under `src`. As such, navigate to the root project directory and then run `pip install -e ./`
+Montreal's bike-sharing system, [Bixi](https://bixi.com/en/), serves hundreds of thousands of trips every year across its network of stations. Despite the large number of stations, finding an available bike during rush hours can be a challenge depending on the location.
+
+This project builds a forecasting service that helps riders plan ahead by predicting station-level bike availability for the upcoming week. Predictions are generated every Sunday and cover the following 7 days in 30-minute intervals.
 
 # Methodology
 
@@ -25,12 +24,6 @@ https://gbfs.velobixi.com/gbfs/en/station_information.json
 Historical data, on the other hand, is not publicly available. However, a project developed by Max Halford allows us to obtain historical data since early 2024 for the city of Montreal and other cities across the world. The data from the project was retrived and persisted for training purposes.***📝 [See blog post](https://maxhalford.github.io/blog/bike-sharing-forecasting-training-set/)***
 
 
-
-# How to use this repository ?
-Linux:
-- create a new virtual python enviroment `python3 -m venv .venv`
-- install dependencies `pip install requirments.txt`
-- **OPTIONAL**: when using jupyter notebooks, it comes in handy to import pacakges developed under `src`. As such, navigate to the root project directory and then run `pip install -e ./`
 
 # Architecture
 
