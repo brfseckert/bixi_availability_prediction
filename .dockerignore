@@ -1,0 +1,13 @@
+.venv
+.env
+.git
+.claude
+.vscode
+.pytest_cache
+__pycache__
+*.egg-info
+notebooks/
+tests/
+src/data/
+*.csv
+*.ipynb

@@ -1,4 +1,12 @@
+.venv
 .env
-/data/*
+src/data/
 /notebooks/*.csv
 /notebooks/raw_data/*
+.claude
+*.egg-info/
+.vscode
+__pycache__/
+.pytest_cache/
+*.pyc
+.ipynb_checkpoints/
