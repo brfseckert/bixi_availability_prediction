@@ -278,10 +278,11 @@ class TestBuildAvailabilitySnapshot:
 
 class TestSaveSnapshot:
 
-    def test_creates_parquet_file(self, tmp_path):
+    def test_creates_parquet_file(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("bixi_availability_prediction.data.ingest_station_status.LOCAL_DATA_DIR", str(tmp_path))
         df = pd.DataFrame({"station_id": ["1"], "num_bikes_available": [5]})
 
-        output_path = save_snapshot(df, str(tmp_path))
+        output_path = save_snapshot(df, "local")
 
         assert output_path.endswith(".parquet")
         assert os.path.exists(output_path)
@@ -289,32 +290,35 @@ class TestSaveSnapshot:
         assert len(result) == 1
         assert list(result.columns) == ["station_id", "num_bikes_available"]
 
-    def test_multiple_saves_create_separate_files(self, tmp_path):
+    def test_multiple_saves_create_separate_files(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("bixi_availability_prediction.data.ingest_station_status.LOCAL_DATA_DIR", str(tmp_path))
         df = pd.DataFrame({"station_id": ["1"], "num_bikes_available": [5]})
 
-        path1 = save_snapshot(df, str(tmp_path))
+        path1 = save_snapshot(df, "local")
         # Ensure different timestamp
         import time
         time.sleep(1)
-        path2 = save_snapshot(df, str(tmp_path))
+        path2 = save_snapshot(df, "local")
 
         assert path1 != path2
         parquet_files = list(tmp_path.glob("*.parquet"))
         assert len(parquet_files) == 2
 
-    def test_filename_contains_timestamp(self, tmp_path):
+    def test_filename_contains_timestamp(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("bixi_availability_prediction.data.ingest_station_status.LOCAL_DATA_DIR", str(tmp_path))
         df = pd.DataFrame({"station_id": ["1"]})
 
-        output_path = save_snapshot(df, str(tmp_path))
+        output_path = save_snapshot(df, "local")
 
         filename = os.path.basename(output_path)
         assert filename.startswith("station_availability_")
         # Timestamp format: YYYYMMDD_HHMMSS
         assert len(filename) == len("station_availability_YYYYMMDD_HHMMSS.parquet")
 
-    def test_creates_output_directory(self, tmp_path):
+    def test_creates_output_directory(self, tmp_path, monkeypatch):
         nested_dir = str(tmp_path / "nested" / "dir")
+        monkeypatch.setattr("bixi_availability_prediction.data.ingest_station_status.LOCAL_DATA_DIR", nested_dir)
         df = pd.DataFrame({"station_id": ["1"]})
 
-        output_path = save_snapshot(df, nested_dir)
+        output_path = save_snapshot(df, "local")
         assert os.path.exists(output_path)
